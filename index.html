@@ -1,127 +1,132 @@
-<!DOCTYPE html> <!--declaração do tipo de documento que aqui esta informando que esta em html5 e obrigatorio deferenciar maiscula e minuscula -->
-<html lang="pt-br"> <!--tag raiz do documento define o idioma.-->
-<head><!-- Cabeçalho -->
-    <meta charset="UTF-8"> <!--Esta tag meta é muito importantes no HTML, pois define a codificação de caracteres do documento.-->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Aqui define o zoom para vizualização em mobile (celular) -->
-    <title> GarageProtech </title> <!--titulo do documento -->
-    <link rel="icon" type="image/png" href="img/favicon.png"> <!--aqui coloca o icon na pagina junto ao title -->
-    <link rel="stylesheet" href="estilo.css"> <!--Aqui chama o css-->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GarageProTech | Mecânica e Elétrica Automotiva</title>
+    <meta name="description" content="GarageProTech: o melhor lugar para o seu cuidado automotivo. Especializada em mecânica, elétrica, injeção eletrônica e manutenção completa.">
+    <link rel="icon" type="image/png" href="img/favicon.png">
+    <link rel="stylesheet" href="estilo.css">
 </head>
+
 <body>
     <!-- Cabeçalho -->
-    <header>
-        <div class="container"> <!--div container -->
-            <img src="img/banner_topo.png" alt="GarageProtech Logo" class="banner-logo">
+    <header class="topo">
+        <div class="container topo-flex">
+            <img src="img/banner_topo.png" alt="Logo GarageProTech" class="banner-logo">
+            <nav class="menu">
+                <ul>
+                    <li><a href="#">Início</a></li>
+                    <li><a href="#servicos">Serviços</a></li>
+                    <li><a href="#sobre">Sobre</a></li>
+                    <li><a href="#contato">Contato</a></li>
+                </ul>
+            </nav>
         </div>
     </header>
-    
-    <!-- Navegação -->
-    <div class="botoeslinks"> 
-        <div class="container">
-            <ul> <!--ul para lista nao ordenada-->
-                <li><a href="#">Home</a></li>  <!-- li intens da lista-->
-                <li><a href="#selecao_titulo">Serviços</a></li>
-                <li><a href="#beneficios">Sobre</a></li>
-                <li><a href="#rodape-container">Contato</a></li>
-            </ul>
-        </div>
-    </div>
-    
+
     <!-- Banner Principal -->
-    <div class="banner">
-        <!-- Linha superior (fora do container para ocupar largura total) -->
-        <h1 id="descricao_bio">A GarageProtech é uma oficina especializada em mecânica e elétrica automotiva, 
-            oferecendo serviços de alta qualidade para veículos de diversos modelos e marcas.</h1>
-        
-        <!-- Conteúdo do banner (dentro do container) -->
+    <section class="banner-principal">
+        <div class="overlay"></div>
+        <div class="conteudo-banner container">
+            <h1>Manutenção Profissional para o Seu Veículo</h1>
+            <p>Confiança, tecnologia e transparência em cada reparo. <br>
+               GarageProTech: o melhor lugar para o seu cuidado automotivo.</p>
+            <a href="https://api.whatsapp.com/send?phone=5543996439627&text=Olá,%20quero%20fazer%20um%20orçamento!" target="_blank" class="btn-banner">Agendar Orçamento</a>
+        </div>
+    </section>
+
+    <!-- Seção de Serviços -->
+    <section class="servicos" id="servicos">
         <div class="container">
-            <h1>Manutenção Profissional para seu Veículo</h1>
-            <a href="" target="_blank" class="btn">Agende seu orçamento</a>
-        </div>
-    </div>
-     
-    <!-- Serviços -->
-    <div class="container">
-        <h2 class="selecao_titulo" id="selecao_titulo">Nossos Serviços</h2>
-        <div class="servicos">
-            <div class="cartao_servico">
-                <h3>Mecânica</h3>
-                <p>Reparos completos em motores, transmissão e sistemas mecânicos</p>
-            </div>
-            <div class="cartao_servico">
-                <h3>Elétrica</h3>
-                <p>Diagnóstico e reparo em sistemas elétricos e eletrônicos</p>
-            </div>
-            <div class="cartao_servico">
-                <h3>Freios</h3>
-                <p>Troca de pastilhas, discos e reparos no sistema de frenagem</p>
-            </div>
-            <div class="cartao_servico">
-                <h3>Suspensão</h3>
-                <p>Amortecedores, buchas, terminais e geometria</p>
-            </div>
-            <div class="cartao_servico">
-                <h3>Injeção Eletrônica</h3>
-                <p>Diagnóstico e reparo com scanner profissional</p>
-            </div>
-            <div class="cartao_servico">
-                <h3>Outros Serviços</h3>
-                <p>Alarme, vidros elétricos, travas e acessórios</p>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Benefícios -->
-    <div class="beneficios" id="beneficios">
-        <div class="container">
-            <h2 class="selecao_titulo">Por que escolher a GarageProtech?</h2>
-            <div class="Lista_beneficios">
-                <div class="beneficio_item">Técnicos certificados</div>
-                <div class="beneficio_item">Garantia nos serviços</div>
-                <div class="beneficio_item">Atendimento personalizado</div>
-                <div class="beneficio_item">Preço justo</div>
-                <div class="beneficio_item">Peças de qualidade</div>
-                <div class="beneficio_item">Agilidade</div>
-                <div class="beneficio_item">Orçamento sem compromisso</div>
-                <div class="beneficio_item">Transparência total</div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Rodapé -->
-    <div class="rodape-container" id="rodape-container">
-        <div class="rodape-conteudo">
-            <div class="coluna">
-                <h3>Contato</h3>
-                <p>Telefone 📞 (43) 9 9643-9627</p>
-                <p>Email ✉ Garageprotechjardim@gmail.com</p>
-            </div>
+            <h2 class="titulo-secao">Nossos Serviços</h2>
+            <p class="subtitulo-secao">Conheça as áreas em que somos especialistas</p>
             
-            <div class="coluna">
-                <h3>Horário</h3>
-                <p>🕒 Seg-Sex: 8h-18h | Sáb: 8h-12h</p>
-            </div>
-            
-            <div class="coluna">
-                <h3>Redes Sociais</h3>
-                <div class="redes-social"> 
-                    <a href="https://www.instagram.com/garageprotech_jardim/" target="_blank"><img src="img/instagran.png" alt="Instagram" class="rede_social"></a>
-                    <a href="https://api.whatsapp.com/send?phone=5543996439627&text=Ol%C3%A1%20a%20Garage%20Protech%20agradece%20seu%20contato,%20Como%20podemos%20ajud%C3%A1-lo" target="_blank">
-                        <img src="img/whatsapp.png" alt="WhatsApp" class="rede_social">
-                    </a>
+            <div class="grade-servicos">
+                <div class="cartao-servico">
+                    <img src="img/mecanica.png" alt="Serviço de mecânica">
+                    <h3>Mecânica</h3>
+                    <p>Reparos completos em motores, câmbios e sistemas mecânicos, com peças de qualidade e garantia.</p>
+                </div>
+                <div class="cartao-servico">
+                    <img src="img/eletrica.png" alt="Serviço elétrico automotivo">
+                    <h3>Elétrica</h3>
+                    <p>Diagnóstico e reparos em sistemas elétricos, baterias, alternadores e módulos eletrônicos.</p>
+                </div>
+                <div class="cartao-servico">
+                    <img src="img/freios.png" alt="Sistema de freios">
+                    <h3>Freios</h3>
+                    <p>Troca de pastilhas, discos, fluídos e verificação completa do sistema de frenagem.</p>
+                </div>
+                <div class="cartao-servico">
+                    <img src="img/suspensao.png" alt="Serviço de suspensão automotiva">
+                    <h3>Suspensão</h3>
+                    <p>Substituição de amortecedores, terminais, buchas e balanceamento para mais conforto e segurança.</p>
+                </div>
+                <div class="cartao-servico">
+                    <img src="img/injecao.png" alt="Injeção eletrônica automotiva">
+                    <h3>Injeção Eletrônica</h3>
+                    <p>Diagnóstico com scanner profissional, limpeza e calibração de bicos e sensores.</p>
+                </div>
+                <div class="cartao-servico">
+                    <img src="img/outros.png" alt="Outros serviços automotivos">
+                    <h3>Outros Serviços</h3>
+                    <p>Instalação de alarmes, vidros elétricos, travas, acessórios e mais.</p>
                 </div>
             </div>
-            
+        </div>
+    </section>
+
+    <!-- Seção Sobre -->
+    <section class="sobre" id="sobre">
+        <div class="container sobre-flex">
+            <div class="texto-sobre">
+                <h2 class="titulo-secao">Por que escolher a GarageProTech?</h2>
+                <p>Somos uma oficina moderna que une experiência, tecnologia e atendimento humano. Nosso foco é oferecer o melhor custo-benefício e transparência total em cada serviço.</p>
+                <ul class="lista-beneficios">
+                    <li>✅ Técnicos certificados e experientes</li>
+                    <li>✅ Garantia real em todos os serviços</li>
+                    <li>✅ Diagnóstico preciso com equipamentos modernos</li>
+                    <li>✅ Atendimento rápido e personalizado</li>
+                    <li>✅ Orçamento gratuito e sem compromisso</li>
+                </ul>
+                <a href="#contato" class="btn-banner">Fale Conosco</a>
+            </div>
+            <div class="imagem-sobre">
+                <img src="img/oficina.jpg" alt="Equipe GarageProTech em ação">
+            </div>
+        </div>
+    </section>
+
+    <!-- Contato / Rodapé -->
+    <footer class="rodape" id="contato">
+        <div class="container rodape-flex">
             <div class="coluna">
-                <h3>Endereço</h3>
+                <h3>📞 Contato</h3>
+                <p><strong>Telefone:</strong> (43) 9 9643-9627</p>
+                <p><strong>Email:</strong> garageprotechjardim@gmail.com</p>
+            </div>
+            <div class="coluna">
+                <h3>🕒 Horário</h3>
+                <p>Segunda a Sexta: 8h às 18h</p>
+                <p>Sábado: 8h às 12h</p>
+            </div>
+            <div class="coluna">
+                <h3>📍 Endereço</h3>
                 <p>PR-466, Km 1 - Parque Industrial</p>
                 <p>Jardim Alegre - PR, 86860-000</p>
             </div>
+            <div class="coluna">
+                <h3>🔗 Redes Sociais</h3>
+                <div class="redes">
+                    <a href="https://www.instagram.com/garageprotech_jardim/" target="_blank"><img src="img/instagran.png" alt="Instagram"></a>
+                    <a href="https://api.whatsapp.com/send?phone=5543996439627&text=Olá,%20quero%20fazer%20um%20orçamento!" target="_blank"><img src="img/whatsapp.png" alt="WhatsApp"></a>
+                </div>
+            </div>
         </div>
-        
         <div class="copyright">
-            <p>&copy; 2024 GarageProtech - Todos os direitos reservados</p>
+            <p>&copy; 2025 GarageProTech — Todos os direitos reservados.</p>
         </div>
-    </div>
+    </footer>
 </body>
 </html>
