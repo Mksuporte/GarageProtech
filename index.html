@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GarageProtech - Oficina Especializada</title>
+    <link rel="icon" type="image/png" href="img/favicon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* ===== RESET & BASE ===== */
@@ -20,8 +21,8 @@
             --accent: #e6b400;
             --light: #f8f9fa;
             --dark: #121212;
-            --text: #e0e0e0;
-            --text-light: #a0a0a0;
+            --text: #333;
+            --text-light: #777;
         }
 
         html {
@@ -31,7 +32,7 @@
         body {
             line-height: 1.6;
             color: var(--text);
-            background-color: var(--dark);
+            background-color: var(--light);
             overflow-x: hidden;
         }
 
@@ -49,14 +50,14 @@
 
         /* ===== HEADER ===== */
         header {
-            background-color: rgba(18, 18, 18, 0.95);
+            background-color: var(--dark);
             color: white;
             padding: 15px 0;
             position: fixed;
             width: 100%;
             top: 0;
             z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
         }
 
@@ -126,7 +127,7 @@
 
         /* ===== HERO SECTION ===== */
         .hero {
-            background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('img/hero-bg.jpg') center/cover no-repeat;
             color: white;
             text-align: center;
             padding: 180px 0 100px;
@@ -170,7 +171,7 @@
 
         /* ===== SERVICES SECTION ===== */
         .services {
-            background-color: var(--secondary);
+            background-color: white;
         }
 
         .section-title {
@@ -181,7 +182,7 @@
 
         .section-title h2 {
             font-size: 2.5rem;
-            color: var(--primary);
+            color: var(--dark);
             margin-bottom: 15px;
             position: relative;
             display: inline-block;
@@ -212,13 +213,13 @@
         }
 
         .service-card {
-            background: rgba(255, 255, 255, 0.05);
+            background: white;
             border-radius: 10px;
             padding: 30px;
             text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid #f0f0f0;
             position: relative;
             overflow: hidden;
         }
@@ -238,8 +239,7 @@
 
         .service-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
         }
 
         .service-card:hover::before {
@@ -255,7 +255,7 @@
         .service-card h3 {
             font-size: 1.5rem;
             margin-bottom: 15px;
-            color: var(--primary);
+            color: var(--dark);
         }
 
         .service-card p {
@@ -270,11 +270,11 @@
         }
 
         .benefits .section-title h2 {
-            color: var(--primary);
+            color: white;
         }
 
         .benefits .section-title p {
-            color: var(--text-light);
+            color: #ccc;
         }
 
         .benefits-grid {
@@ -306,16 +306,11 @@
         .benefit-item h4 {
             font-size: 1.2rem;
             margin-bottom: 10px;
-            color: var(--text);
-        }
-
-        .benefit-item p {
-            color: var(--text-light);
         }
 
         /* ===== FOOTER ===== */
         footer {
-            background-color: var(--secondary);
+            background-color: var(--dark);
             color: white;
             padding: 70px 0 0;
         }
@@ -347,14 +342,8 @@
 
         .footer-column p {
             margin-bottom: 15px;
-            color: var(--text-light);
+            color: #ccc;
             line-height: 1.7;
-        }
-
-        .footer-column i {
-            color: var(--primary);
-            margin-right: 10px;
-            width: 20px;
         }
 
         .social-links {
@@ -386,7 +375,7 @@
             text-align: center;
             padding: 25px 0;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text-light);
+            color: #999;
             font-size: 0.9rem;
         }
 
@@ -458,10 +447,6 @@
             section {
                 padding: 60px 0;
             }
-            
-            .footer-content {
-                grid-template-columns: 1fr;
-            }
         }
     </style>
 </head>
@@ -470,7 +455,8 @@
     <header>
         <div class="container header-container">
             <div class="logo">
-                <div class="logo-text">GarageProtech</div>
+                <img src="img/banner_topo.png" alt="GarageProtech">
+                <span class="logo-text">GarageProtech</span>
             </div>
             
             <div class="hamburger" id="hamburger">
@@ -533,7 +519,7 @@
                         <i class="fas fa-car-side"></i>
                     </div>
                     <h3>Suspensão</h3>
-                    <p>Amortecedores, buchas e terminais para melhor estabilidade e conforto.</p>
+                    <p>Amortecedores, buchas, terminais e geometria para melhor estabilidade e conforto.</p>
                 </div>
                 
                 <div class="service-card">
@@ -691,10 +677,10 @@
             const header = document.querySelector('header');
             if (window.scrollY > 50) {
                 header.style.padding = '10px 0';
-                header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.3)';
+                header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.2)';
             } else {
                 header.style.padding = '15px 0';
-                header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.3)';
+                header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.2)';
             }
         });
     </script>
