@@ -366,6 +366,50 @@
             color: #ccc;
         }
 
+        /* ===== MAP SECTION ===== */
+        .map-section {
+            background-color: var(--dark);
+            padding: 60px 0;
+        }
+
+        .map-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .map-wrapper {
+            width: 100%;
+            max-width: 600px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 2px solid var(--primary);
+        }
+
+        .map-frame {
+            width: 100%;
+            height: 300px;
+            border: none;
+        }
+
+        .map-info {
+            text-align: center;
+            color: white;
+        }
+
+        .map-info h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .map-info p {
+            color: #ccc;
+            margin-bottom: 10px;
+        }
+
         /* ===== FOOTER ===== */
         footer {
             background-color: var(--dark);
@@ -464,6 +508,10 @@
             .section-title h2 {
                 font-size: 2rem;
             }
+
+            .map-frame {
+                height: 250px;
+            }
         }
 
         @media (max-width: 576px) {
@@ -491,6 +539,10 @@
             .logo img {
                 height: 40px;
             }
+
+            .map-frame {
+                height: 200px;
+            }
         }
     </style>
 </head>
@@ -511,6 +563,7 @@
                 <li><a href="#home">Home</a></li>
                 <li><a href="#services">Serviços</a></li>
                 <li><a href="#benefits">Vantagens</a></li>
+                <li><a href="#location">Localização</a></li>
                 <li><a href="#contact">Contato</a></li>
             </ul>
             <div class="menu-overlay" id="menuOverlay"></div>
@@ -657,6 +710,37 @@
                     </div>
                     <h4>Transparência Total</h4>
                     <p>Mantemos você informado em todas as etapas</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Map Section -->
+    <section class="map-section" id="location">
+        <div class="container">
+            <div class="section-title">
+                <h2>Nossa Localização</h2>
+                <p>Venha nos visitar e conhecer nossa oficina</p>
+            </div>
+            
+            <div class="map-container">
+                <div class="map-wrapper">
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3633.234567890123!2d-51.68545678901234!3d-24.123456789012345!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94ec3a1234567890%3A0xabcdef123456789!2sAv.%20Ladislao%20Gil%20Fernandes%2C%20Ivaipor%C3%A3%20-%20PR%2C%2086870-000!5e0!3m2!1spt-BR!2sbr!4v1234567890123!5m2!1spt-BR!2sbr" 
+                        class="map-frame"
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+                
+                <div class="map-info">
+                    <h3>GarageProtech Ivaiporã</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Av. Ladislao Gil Fernandes, Ivaiporã - PR</p>
+                    <p><i class="fas fa-clock"></i> Segunda a Sexta: 8h às 18h | Sábado: 8h às 12h</p>
+                    <a href="https://maps.google.com/?q=Av.+Ladislao+Gil+Fernandes,+Ivaiporã+-+PR" target="_blank" class="btn" style="margin-top: 15px;">
+                        <i class="fas fa-directions"></i> Como Chegar
+                    </a>
                 </div>
             </div>
         </div>
