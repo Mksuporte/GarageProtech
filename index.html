@@ -1003,40 +1003,124 @@
         }
 
         // ===== ADICIONAR MENSAGEM NA TELA =====
-        function addMessage(msg, type) {
-            const box = document.getElementById("chatbot-messages");
-            const div = document.createElement("div");
-
-            div.className = "chat-msg chat-" + type;
-            div.innerText = msg;
-
-            box.appendChild(div);
-            box.scrollTop = box.scrollHeight;
-        }
+       function addMessage(msg, sender) {
+    const chatBox = document.getElementById("chat-box");
+    const messageDiv = document.createElement("div");
+    messageDiv.classList.add("message", sender + "-message");
+    
+    // Substituir quebras de linha por <br>
+    messageDiv.innerHTML = msg.replace(/\n/g, "<br>");
+    
+    chatBox.appendChild(messageDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
 
         // ===== RESPOSTAS DO BOT =====
         function botReply(userText) {
-            let reply = "Não entendi, pode reformular? 😊";
-            userText = userText.toLowerCase();
+    let reply = "Desculpe, não entendi muito bem. Pode reformular? 😊";
+    const original = userText;
+    let text = userText
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
 
-            if (userText.includes("oi") || userText.includes("ola") || userText.includes("bom")) {
-                reply = "Olá! Sou o assistente da GarageProTech. Como posso ajudar hoje? 🚗✨";
-            }
-            else if (userText.includes("horário") || userText.includes("funciona")) {
-                reply = "Funcionamos de segunda a sexta das 8h às 18h e sábado das 8h às 12h.";
-            }
-            else if (userText.includes("telefone") || userText.includes("contato") || userText.includes("whatsapp")) {
-                reply = "Nosso WhatsApp é: (43) 9 9643-9627 📞";
-            }
-            else if (userText.includes("endereço") || userText.includes("local")) {
-                reply = "Estamos na Av. Ladislao Gil Fernandes, Ivaiporã - PR.";
-            }
-            else if (userText.includes("serviço") || userText.includes("orçamento") || userText.includes("preço")) {
-                reply = "Claro! Me diga o modelo do carro e o problema que faço um orçamento inicial.";
-            }
+    // 🔧 Função auxiliar
+    const has = arr => arr.some(w => text.includes(w));
 
-            addMessage(reply, "bot");
+    // 📌 Banco de intenções
+    const intents = {
+        agradecimento: ["obrigado", "valeu", "agradeco", "brigado"],
+        despedida: ["tchau", "ate mais", "fui", "vlw", "bye", "encerrar"],
+        whatsapp: ["whatsapp", "zap", "whats", "wpp"],
+        telefone: ["telefone", "ligar", "ligacao", "discar"],
+        horario: ["horario", "expediente", "abre", "fecha", "funciona"],
+        endereco: ["endereco", "localizacao", "onde fica", "local", "mapa"],
+        orcamento: ["orcamento", "preco", "valor", "quanto", "custa"],
+        servico: ["servico", "revisao", "manutencao", "reparo", "freio", "suspensao", "injecao"],
+        problema: ["problema", "defeito", "quebrado", "barulho", "ruido"],
+        sobre: ["quem sao", "sobre", "empresa", "historia"],
+        saudacao: ["oi", "ola", "opa", "bom dia", "boa tarde", "boa noite", "eae"]
+    };
+
+    // 🔍 Detectar se é saudação (apenas no início)
+    const isHello = intents.saudacao.some(w => text.startsWith(w));
+
+    // 🔍 Detectar informações do veículo
+    const anoCarro = text.match(/\b(19|20)\d{2}\b/);
+    const modelos = ["gol", "onix", "hb20", "uno", "palio", "civic", "corolla", "saveiro", "siena", "strada", "toro", "hilux", "ranger"];
+    const modeloCarro = modelos.find(m => text.includes(m));
+
+    const temProblema = has(intents.problema);
+    const temServico = has(intents.servico);
+
+    // ============================================================
+    //                   RESPOSTAS – EM ORDEM
+    // ============================================================
+
+    // 1. Agradecimento
+    if (has(intents.agradecimento)) {
+        reply = "De nada! 😊 Fico feliz em ajudar! Se tiver mais alguma dúvida, é só perguntar! 🚗";
+    }
+
+    // 2. Despedida
+    else if (has(intents.despedida)) {
+        reply = "Até logo! 👋 Lembre-se: qualidade e garantia é aqui na GarageProTech! Volte sempre! 🛠️";
+    }
+
+    // 3. WhatsApp
+    else if (has(intents.whatsapp)) {
+        reply = `📞 **Contato GarageProTech**  \n💬 **WhatsApp:** (43) 9 9643-9627  \n📞 **Telefone:** (43) 3472-0000  \n\n<a href="https://wa.me/5543996439627" target="_blank" style="color: #25D366; font-weight: bold;">📱 Clique aqui para abrir o WhatsApp</a>  \n\nRespondemos rapidinho! 💬`;
+    }
+
+    // 4. Horário
+    else if (has(intents.horario)) {
+        reply = `🕒 **Horários de Funcionamento:**  \n📍 **Segunda a Sexta:** 8h às 18h  \n📍 **Sábados:** 8h às 12h  \n📍 **Domingos:** Fechado  \n\nEstamos aqui para te atender! 🛠️`;
+    }
+
+    // 5. Endereço
+    else if (has(intents.endereco)) {
+        reply = `📍 **Nosso Endereço:**  \nAv. Ladislao Gil Fernandes, Ivaiporã - PR  \n\n<a href="https://maps.google.com/?q=Av.+Ladislao+Gil+Fernandes,+Ivaiporã+-+PR" target="_blank" style="color: #4285F4; font-weight: bold;">🗺️ Ver no Google Maps</a>`;
+    }
+
+    // 6. ORÇAMENTO – Lógica inteligente
+    else if (has(intents.orcamento)) {
+
+        // ➤ Tem informações suficientes
+        if ((modeloCarro || anoCarro) && (temProblema || temServico)) {
+            let info = [];
+            if (modeloCarro) info.push(`✔ **Modelo:** ${modeloCarro.toUpperCase()}`);
+            if (anoCarro) info.push(`✔ **Ano:** ${anoCarro[0]}`);
+            
+            reply = `🛠️ **Orçamento - GarageProTech**  \n\nPerfeito! Recebi suas informações:  \n${info.join('  \n')}  \n\n📋 **Vou preparar um orçamento personalizado para você!**  \nEm instantes nossa equipe entrará em contato com os valores. ✅`;
         }
+        // ➤ Falta informações
+        else {
+            reply = `🛠️ **Orçamento - GarageProTech**  \n\nClaro! Para te dar um orçamento preciso, preciso de algumas informações:  \n\n📋 **Por favor, me informe:**  \n• **Modelo do carro** (ex: Gol, Civic, Onix)  \n• **Ano do veículo**  \n• **Qual o problema ou serviço necessário?**  \n\nAssim posso te ajudar melhor! 🚗`;
+        }
+    }
+
+    // 7. Serviços
+    else if (temServico || temProblema) {
+        reply = `🛠️ **Serviços GarageProTech**  \n\nRealizamos todos esses serviços com garantia:  \n• 🔧 Mecânica Geral  \n• ⚡ Elétrica Automotiva  \n• 💻 Injeção Eletrônica  \n• 🛑 Freios e Suspensão  \n• 🛢️ Troca de Óleo e Filtros  \n• 🔍 Diagnóstico Computadorizado  \n\nPara orçamento, me informe: modelo, ano e o problema! 📋`;
+    }
+
+    // 8. Sobre a empresa
+    else if (has(intents.sobre)) {
+        reply = `🏢 **Sobre a GarageProTech**  \n\nSomos uma oficina especializada em mecânica e elétrica automotiva com **mais de 10 anos de experiência**!  \n\n✅ **Nossos diferenciais:**  \n• Diagnóstico preciso  \n• Transparência total  \n• Qualidade comprovada  \n• Garantia em todos os serviços  \n\nSeu carro em boas mãos! 👨‍🔧`;
+    }
+
+    // 9. Telefone genérico
+    else if (has(intents.telefone)) {
+        reply = `📞 **Contato GarageProTech**  \n\n💬 **WhatsApp:** (43) 9 9643-9627  \n📞 **Telefone Fixo:** (43) 3472-0000  \n📧 **E-mail:** contato@garageprotech.com  \n\n<a href="https://wa.me/5543996439627" target="_blank" style="color: #25D366; font-weight: bold;">📱 Clique aqui para abrir o WhatsApp</a>`;
+    }
+
+    // 10. Saudação
+    else if (isHello) {
+        reply = `Olá! 🚗 Sou o assistente virtual da **GarageProTech**.  \n\nPosso te ajudar com:  \n• 📋 Orçamentos e serviços  \n• 📍 Endereço e localização  \n• 📞 Contato e WhatsApp  \n• 🕒 Horários de funcionamento  \n• 🏢 Informações sobre a oficina  \n\n**Como posso ajudar você hoje?** ✨`;
+    }
+
+    addMessage(reply, "bot");
+}
     </script>
 </body>
 
