@@ -1088,420 +1088,173 @@
             }
         });
 
-       // ===== CHATBOT FUNCTIONS =====
-const chatbotButton = document.getElementById("chatbot-button");
-const chatbotBox = document.getElementById("chatbot-box");
-const chatbotClose = document.getElementById("close-chatbot");
-const chatMessages = document.getElementById("chatbot-messages");
-const sendBtn = document.getElementById("chatbot-send");
-const inputField = document.getElementById("chatbot-input");
-
-// Abrir/fechar chatbot
-chatbotButton.addEventListener("click", () => {
-    chatbotBox.style.display = "flex";
-    inputField.focus();
-});
-
-chatbotClose.addEventListener("click", () => {
-    chatbotBox.style.display = "none";
-});
-
-// Fechar chatbot com ESC
-document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && chatbotBox.style.display === "flex") {
-        chatbotBox.style.display = "none";
-    }
-});
-
-// Enviar mensagem
-sendBtn.addEventListener("click", sendMessage);
-inputField.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") sendMessage();
-});
-
-function sendMessage() {
-    const text = inputField.value.trim();
-    if (text === "") return;
-
-    addMessage(text, "user");
-    inputField.value = "";
-
-    // Simular digitação do bot
-    setTimeout(() => {
-        const thinkingMsg = addMessage("Digitando...", "bot");
-        setTimeout(() => {
-            chatMessages.removeChild(thinkingMsg);
-            botReply(text);
-        }, 800);
-    }, 600);
-}
-
-function addMessage(msg, sender) {
-    const messageDiv = document.createElement("div");
-    messageDiv.classList.add("message", sender + "-message");
-    
-    // Substituir quebras de linha por <br> e processar links
-    let processedMsg = msg.replace(/\n/g, "<br>");
-    
-    // Converter **texto** para negrito
-    processedMsg = processedMsg.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    
-    // Detectar e converter links
-    processedMsg = processedMsg.replace(
-        /\[(.*?)\]\((.*?)\)/g, 
-        '<a href="$2" target="_blank" style="color: #25D366; font-weight: bold;">$1</a>'
-    );
-    
-    messageDiv.innerHTML = processedMsg;
-    chatMessages.appendChild(messageDiv);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-    
-    return messageDiv;
-}
-
-// ===== CONTEXTO DO CHATBOT =====
-let conversationContext = {
-    waiting: false,
-    intent: null,
-    data: {},
-    step: 0
+    // ===================== CONFIGURAÇÕES =====================
+const CONFIG = {
+    whatsappNumber: "5543996439627",
+    typingDelay: 600,
+    processingDelay: 800
 };
 
-// ===== UTILIDADES =====
-const normalize = t =>
-    t.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
-const has = (text, arr) => arr.some(w => text.includes(w));
-
-// ===== FUNÇÃO PARA ENVIAR PARA WHATSAPP =====
-function enviarParaWhatsapp(dados) {
-    const numero = "5543996439627";
-    
-    // Verificar se dados é uma string (JSON) ou objeto
-    let dadosOrcamento;
-    if (typeof dados === 'string') {
-        dadosOrcamento = JSON.parse(dados);
-    } else {
-        dadosOrcamento = dados;
-    }
-    
-    // Classificar o tipo de serviço
-    const tipoServico = classificarServico(dadosOrcamento.problema || '');
-    
-    const mensagem = 
-`🛠️ *NOVO ORÇAMENTO SOLICITADO VIA SITE* 🚗
-
-*DADOS DO VEÍCULO:*
-• Modelo: ${dadosOrcamento.modelo || 'Não informado'}
-• Ano: ${dadosOrcamento.ano || 'Não informado'}
-• Problema: ${dadosOrcamento.problema || 'Não informado'}
-• Detalhes adicionais: ${dadosOrcamento.detalhes || 'Não informado'}
-
-*TIPO DE SERVIÇO NECESSÁRIO:*
-${tipoServico}
-
-*INFORMAÇÕES ADICIONAIS:*
-• Cliente: Via Chatbot do Site
-• Data: ${new Date().toLocaleDateString('pt-BR')}
-• Hora: ${new Date().toLocaleTimeString('pt-BR')}
-
-_Orçamento solicitado automaticamente pelo sistema_`;
-
-    const url = "https://wa.me/" + numero + "?text=" + encodeURIComponent(mensagem);
-    window.open(url, "_blank");
-    
-    // Fechar o chatbot após enviar
-    setTimeout(() => {
-        chatbotBox.style.display = "none";
-    }, 1000);
-}
-
-// ===== BASE DE DADOS =====
-const modelosCarros = [
-    "gol","onix","hb20","uno","palio","civic","corolla","saveiro","siena","strada",
-    "toro","hilux","ranger","peugeot","207","208","307","308","fox","polo","jetta","golf",
-    "fiesta","focus","ecosport","ka","sandero","logan","duster","renault","chevrolet","fiat",
-    "volkswagen","vw","ford","hyundai","toyota","honda","nissan","mitsubishi"
-];
-
-const intents = {
-    agradecimento: ["obrigado","valeu","agradeco","brigado","obrigada","thanks"],
-    despedida: ["tchau","ate mais","fui","vlw","bye","encerrar","flw", "adeus", "sair"],
-    whatsapp: ["whatsapp","zap","whats","wpp"],
-    telefone: ["telefone","ligar","ligacao","discar","fone"],
-    horario: ["horario","expediente","abre","fecha","funciona","atendimento"],
-    endereco: ["endereco","localizacao","onde fica","local","mapa", "endereço"],
-    orcamento: ["orcamento","preco","valor","quanto","custa","cotacao", "cotaçao", "preço"],
-    servico: ["servico","revisao","manutencao","reparo","freio","suspensao",
-              "injecao","troca","conserto","pastilha","oleo","óleo", "serviço", "revisão"],
-    problema: ["problema","defeito","quebrado","barulho","ruido","vazamento","quebrou"],
-    sobre: ["quem sao","sobre","empresa","historia","conhecer"]
+// ===================== ELEMENTOS DA INTERFACE =====================
+const elements = {
+    chatbotButton: document.getElementById("chatbot-button"),
+    chatbotBox: document.getElementById("chatbox-box"),
+    chatbotClose: document.getElementById("close-chatbot"),
+    chatMessages: document.getElementById("chatbot-messages"),
+    sendBtn: document.getElementById("chatbot-send"),
+    inputField: document.getElementById("chatbot-input")
 };
 
-// ===== CLASSIFICAR SERVIÇOS =====
-function classificarServico(problema) {
-    const problemaNormalizado = normalize(problema);
-    
-    const categorias = {
-        "MECÂNICA": [
-            "motor", "embreagem", "troca oleo", "óleo", "filtro", "correia", 
-            "radiador", "aquecimento", "superaquecimento", "vazamento"
-        ],
-        "ELÉTRICA": [
-            "bateria", "partida", "luz", "farol", "lanterna", "vidro", "travas",
-            "alarme", "som", "radio", "painel", "alternador", "motor de arranque"
-        ],
-        "FREIOS": [
-            "freio", "pastilha", "disco", "fluido", "pedal", "barulho freio",
-            "range", "ruído frenagem"
-        ],
-        "SUSPENSÃO": [
-            "suspensão", "suspensao", "amortecedor", "mola", "barulho baixo",
-            "trepidação", "direção", "terminal", "bucha"
-        ],
-        "INJEÇÃO ELETRÔNICA": [
-            "injeção", "injecao", "falha", "falhando", "computador", "sensor",
-            "bico", "bomba", "combustível", "consumo"
-        ],
-        "DIAGNÓSTICO": [
-            "diagnóstico", "scanner", "computadorizado", "verificar", "analisar"
-        ]
-    };
-    
-    for (const [categoria, palavras] of Object.entries(categorias)) {
-        if (palavras.some(palavra => problemaNormalizado.includes(palavra))) {
-            return `• ${categoria}`;
-        }
+// ===================== ESTADO DO CHAT =====================
+const chatState = {
+    isCollectingData: false,
+    currentStep: 0,
+    formData: {
+        model: "",
+        year: "",
+        problem: "",
+        problemType: "",
+        details: ""
     }
-    
-    return "• GERAL (avaliação necessária)";
-}
+};
 
-// ===== DETECTAR PROBLEMAS ESPECÍFICOS =====
-function detectarProblema(text) {
-    const problemas = {
-        "falhando": ["falha", "falhando", "engasgando", "trincando", "balançando"],
-        "bateria": ["bateria", "não liga", "fraco", "descarga", "partida lenta"],
-        "freio": ["freio", "pastilha", "disco", "barulho freio", "range", "pedal baixo"],
-        "suspensao": ["suspensão", "suspensao", "barulho baixo", "trepidação", "amortecedor"],
-        "eletrica": ["elétrica", "eletrica", "luz", "farol", "vidro", "travas", "alarme"],
-        "consumo": ["consumo alto", "gastando", "rendimento baixo"],
-        "vazamento": ["vazando", "vazamento", "óleo", "oleo", "agua", "fluido"],
-        "aquecimento": ["aquecendo", "superaquecimento", "temperatura", "radiador"]
-    };
-    
-    for (const [problema, palavras] of Object.entries(problemas)) {
-        if (palavras.some(p => text.includes(p))) {
-            return problema;
-        }
+// ===================== UTILIDADES =====================
+class TextUtils {
+    static normalize(text) {
+        return text.toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
     }
-    return null;
-}
 
-// ===== PERGUNTAS COMPLEMENTARES =====
-function perguntasComplementares(problema) {
-    const perguntas = {
-        "falhando": "O carro falha em baixa rotação, alta ou ambas?",
-        "bateria": "A luz do painel acende quando gira a chave?",
-        "freio": "O barulho acontece sempre ou só quando freia?",
-        "suspensao": "O barulho é mais forte em buracos ou lombadas?",
-        "consumo": "Percebeu aumento gradual ou repentino no consumo?",
-        "vazamento": "Consegue identificar a cor do fluido que está vazando?",
-        "aquecimento": "O ponteiro da temperatura chega no vermelho?",
-        "eletrica": "Qual equipamento específico não funciona?"
-    };
-    
-    const problemaDetectado = detectarProblema(problema);
-    if (problemaDetectado && perguntas[problemaDetectado]) {
-        return perguntas[problemaDetectado];
+    static containsAny(text, wordList) {
+        return wordList.some(word => text.includes(word));
     }
-    
-    return "Há quanto tempo percebeu este problema?";
+
+    static extractYear(text) {
+        const match = text.match(/\b(19|20)\d{2}\b/);
+        return match ? match[0] : null;
+    }
+
+    static processMessageContent(text) {
+        return text
+            .replace(/\n/g, "<br>")
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\[(.*?)\]\((.*?)\)/g, 
+                '<a href="$2" target="_blank" style="color: #25D366; font-weight: bold;">$1</a>'
+            );
+    }
 }
 
-// ===== DETECTAR MODELO E ANO =====
-function detectarModelo(text) {
-    return modelosCarros.find(m => text.includes(m));
+// ===================== DOMÍNIO/MODELOS =====================
+class CarModels {
+    static list = [
+        "gol", "onix", "hb20", "uno", "palio", "civic", "corolla", "saveiro", "siena", "strada",
+        "toro", "hilux", "ranger", "peugeot", "207", "208", "307", "308", "fox", "polo", "jetta", "golf",
+        "fiesta", "focus", "ecosport", "ka", "sandero", "logan", "duster", "renault", "chevrolet", "fiat",
+        "volkswagen", "vw", "ford", "hyundai", "toyota", "honda", "nissan", "mitsubishi"
+    ];
+
+    static detect(text) {
+        return this.list.find(model => text.includes(model));
+    }
 }
 
-function detectarAno(text) {
-    const anoMatch = text.match(/\b(19|20)\d{2}\b/);
-    return anoMatch ? anoMatch[0] : null;
-}
-
-// ===== OPÇÕES RÁPIDAS =====
-function mostrarOpcoesRapidas() {
-    return `
-🚗 *Problemas comuns:*
-
-[1] 🔧 Mecânica (motor, embreagem, troca de óleo)
-[2] ⚡ Elétrica (bateria, partida, luzes, vidros)
-[3] 🛑 Freios (barulho, pedal baixo, pastilhas)
-[4] 🛢️ Manutenção (óleo, filtros, revisão)
-[5] 🔍 Diagnóstico (computadorizado, verificação)
-[6] 🚙 Suspensão (barulhos, trepidação)
-[7] 💻 Injeção (falhas, consumo alto)
-[8] ❓ Outro problema
-
-*Digite o número ou descreva seu problema:*
-    `;
-}
-
-// ===== ADICIONAR MENSAGEM COM OPÇÕES =====
-function addMessageWithOptions(msg, sender, options = []) {
-    const messageDiv = addMessage(msg, sender);
-    
-    if (options.length > 0) {
-        const optionsDiv = document.createElement("div");
-        optionsDiv.className = "chat-options";
+class ServiceClassifier {
+    static categorize(problem) {
+        const normalizedProblem = TextUtils.normalize(problem);
         
-        options.forEach((option, index) => {
-            const btn = document.createElement("button");
-            btn.textContent = option.text;
-            btn.className = "chat-option-btn";
-            btn.onclick = () => {
-                inputField.value = option.value;
-                sendMessage();
-            };
-            optionsDiv.appendChild(btn);
-        });
+        const categories = {
+            "MECÂNICA": ["motor", "embreagem", "troca oleo", "óleo", "filtro", "correia", 
+                        "radiador", "aquecimento", "superaquecimento", "vazamento"],
+            "ELÉTRICA": ["bateria", "partida", "luz", "farol", "lanterna", "vidro", "travas",
+                        "alarme", "som", "radio", "painel", "alternador", "motor de arranque"],
+            "FREIOS": ["freio", "pastilha", "disco", "fluido", "pedal", "barulho freio",
+                      "range", "ruído frenagem"],
+            "SUSPENSÃO": ["suspensão", "suspensao", "amortecedor", "mola", "barulho baixo",
+                         "trepidação", "direção", "terminal", "bucha"],
+            "INJEÇÃO ELETRÔNICA": ["injeção", "injecao", "falha", "falhando", "computador", 
+                                  "sensor", "bico", "bomba", "combustível", "consumo"],
+            "DIAGNÓSTICO": ["diagnóstico", "scanner", "computadorizado", "verificar", "analisar"]
+        };
         
-        messageDiv.appendChild(optionsDiv);
-    }
-    
-    return messageDiv;
-}
-
-// ===== PROCESSAR COLETA DE DADOS =====
-function processarColeta(text, original) {
-    const ctx = conversationContext;
-    let coletouAlgo = false;
-
-    // Detectar modelo
-    const modelo = detectarModelo(text);
-    if (modelo && !ctx.data.modelo) {
-        ctx.data.modelo = modelo.toUpperCase();
-        coletouAlgo = true;
-    }
-
-    // Detectar ano
-    const ano = detectarAno(text);
-    if (ano && !ctx.data.ano) {
-        ctx.data.ano = ano;
-        coletouAlgo = true;
-    }
-
-    // Detectar problema
-    const problemaDetectado = detectarProblema(text);
-    if (problemaDetectado && !ctx.data.problemaTipo) {
-        ctx.data.problemaTipo = problemaDetectado;
-        coletouAlgo = true;
-    }
-
-    // Detectar descrição do problema (texto mais longo)
-    const isInfoText = original.length > 3 && 
-                      !ano && 
-                      !modelo && 
-                      !/\b(sim|não|nao|ok|pronto)\b/i.test(original);
-    
-    if (!ctx.data.problema && isInfoText) {
-        ctx.data.problema = original;
-        coletouAlgo = true;
-    }
-
-    const { modelo: M, ano: A, problema: P, problemaTipo: PT } = ctx.data;
-
-    // Se temos todas as informações principais
-    if (M && A && P && ctx.step >= 2) {
-        // Pergunta complementar baseada no problema
-        const perguntaComplementar = perguntasComplementares(P);
-        if (perguntaComplementar && !ctx.data.detalhes) {
-            ctx.step = 3;
-            return `${perguntaComplementar}\n\n*(Responda com os detalhes ou digite "pronto" se não souber)*`;
+        for (const [category, keywords] of Object.entries(categories)) {
+            if (keywords.some(keyword => normalizedProblem.includes(keyword))) {
+                return `• ${category}`;
+            }
         }
         
-        // Se já tem detalhes ou usuário disse pronto
-        if (ctx.data.detalhes || text.includes("pronto")) {
-            // SALVAR OS DADOS ANTES DE RESETAR
-            const dadosOrcamento = {
-                modelo: M,
-                ano: A,
-                problema: P,
-                problemaTipo: PT,
-                detalhes: ctx.data.detalhes || "Não informado"
-            };
+        return "• GERAL (avaliação necessária)";
+    }
 
-            const reply = `🛠️ **Perfeito! Orçamento Solicitado**  
-
-📋 **Dados recebidos:**  
-• **Veículo:** ${M}  
-• **Ano:** ${A}  
-• **Serviço:** ${P}  
-${ctx.data.detalhes ? `• **Detalhes:** ${ctx.data.detalhes}\n` : ''}  
-
-✅ **Pronto! Clique no botão abaixo para enviar para nosso WhatsApp:**  
-
-[📱 Enviar para WhatsApp](javascript:enviarParaWhatsapp(${JSON.stringify(dadosOrcamento).replace(/"/g, '&quot;')}))  
-
-Nossa equipe responderá com o orçamento em breve!`;
-
-            conversationContext = { waiting: false, intent: null, data: {}, step: 0 };
-            return reply;
+    static detectProblemType(text) {
+        const problemPatterns = {
+            "falhando": ["falha", "falhando", "engasgando", "trincando", "balançando"],
+            "bateria": ["bateria", "não liga", "fraco", "descarga", "partida lenta"],
+            "freio": ["freio", "pastilha", "disco", "barulho freio", "range", "pedal baixo"],
+            "suspensao": ["suspensão", "suspensao", "barulho baixo", "trepidação", "amortecedor"],
+            "eletrica": ["elétrica", "eletrica", "luz", "farol", "vidro", "travas", "alarme"],
+            "consumo": ["consumo alto", "gastando", "rendimento baixo"],
+            "vazamento": ["vazando", "vazamento", "óleo", "oleo", "agua", "fluido"],
+            "aquecimento": ["aquecendo", "superaquecimento", "temperatura", "radiador"]
+        };
+        
+        for (const [problemType, keywords] of Object.entries(problemPatterns)) {
+            if (keywords.some(keyword => text.includes(keyword))) {
+                return problemType;
+            }
         }
+        return null;
     }
 
-    // Se coletou algo mas ainda falta
-    if (coletouAlgo) {
-        ctx.step++;
-        const faltando = [];
-        if (!M) faltando.push("• **Modelo do carro** (ex: Gol, Civic, Onix)");
-        if (!A) faltando.push("• **Ano do veículo**");
-        if (!P) faltando.push("• **Descrição do problema/serviço**");
-
-        return `🛠️ **Ótimo! Vamos continuar seu orçamento**  
-
-📋 **Informações coletadas:**  
-${M ? `• **Modelo:** ${M}\n` : ""}${A ? `• **Ano:** ${A}\n` : ""}${P ? `• **Serviço:** ${P}\n` : ""}  
-
-📝 **Ainda preciso de:**  
-${faltando.join('\n')}  
-
-Pode me enviar? 😊`;
+    static getFollowUpQuestion(problemType) {
+        const questions = {
+            "falhando": "O carro falha em baixa rotação, alta ou ambas?",
+            "bateria": "A luz do painel acende quando gira a chave?",
+            "freio": "O barulho acontece sempre ou só quando freia?",
+            "suspensao": "O barulho é mais forte em buracos ou lombadas?",
+            "consumo": "Percebeu aumento gradual ou repentino no consumo?",
+            "vazamento": "Consegue identificar a cor do fluido que está vazando?",
+            "aquecimento": "O ponteiro da temperatura chega no vermelho?",
+            "eletrica": "Qual equipamento específico não funciona?"
+        };
+        
+        return questions[problemType] || "Há quanto tempo percebeu este problema?";
     }
-
-    // Se não coletou nada novo
-    return `🛠️ **Preciso dessas informações para seu orçamento:**  
-
-📋 **Por favor, me informe:**  
-• **Modelo do carro** (ex: Gol, Civic, Onix)  
-• **Ano do veículo**  
-• **Qual o problema ou serviço necessário?**  
-
-Pode enviar tudo junto ou separado! 🚗`;
 }
 
-// ===== RESPOSTAS PRONTAS =====
-const respostas = {
-    horario: `🕒 **Horários de Funcionamento:**  
+// ===================== RESPOSTAS PRÉ-DEFINIDAS =====================
+const Responses = {
+    greeting: `Olá! 🚗 Sou o assistente virtual da **GarageProTech**.  
+
+Posso te ajudar com:  
+• 📋 Orçamentos e serviços  
+• 📍 Endereço e localização  
+• 📞 WhatsApp  
+• 🕒 Horários de funcionamento  
+• 🏢 Informações sobre a oficina  
+
+**Como posso ajudar você hoje?** ✨`,
+
+    hours: `🕒 **Horários de Funcionamento:**  
 📍 **Segunda a Sexta:** 8h às 18h  
 📍 **Sábados:** 8h às 12h  
 📍 **Domingos:** Fechado  
 
 Estamos aqui para te atender! 🛠️`,
 
-    endereco: `📍 **Nosso Endereço:**  
+    address: `📍 **Nosso Endereço:**  
 Av. Ladislao Gil Fernandes, Ivaiporã - PR  
 
 🗺️ [Ver no Google Maps](https://maps.google.com/?q=Av.+Ladislao+Gil+Fernandes,+Ivaiporã+-+PR)`,
 
-    contato: `📞 **Contato GarageProTech**  
+    contact: `📞 **Contato GarageProTech**  
 💬 **WhatsApp:** (43) 9 9643-9627  
 📞 **Telefone:** (43) 3472-0000  
 📧 **E-mail:** contato@garageprotech.com  
 
 [📱 Clique aqui para abrir o WhatsApp](https://wa.me/5543996439627)`,
 
-    sobre: `🏢 **Sobre a GarageProTech**  
+    about: `🏢 **Sobre a GarageProTech**  
 
 Somos uma oficina especializada em mecânica e elétrica automotiva com **mais de 10 anos de experiência**!  
 
@@ -1513,18 +1266,7 @@ Somos uma oficina especializada em mecânica e elétrica automotiva com **mais d
 
 Seu carro em boas mãos! 👨‍🔧`,
 
-    saudacao: `Olá! 🚗 Sou o assistente virtual da **GarageProTech**.  
-
-Posso te ajudar com:  
-• 📋 Orçamentos e serviços  
-• 📍 Endereço e localização  
-• 📞 WhatsApp  
-• 🕒 Horários de funcionamento  
-• 🏢 Informações sobre a oficina  
-
-**Como posso ajudar você hoje?** ✨`,
-
-    servicos: `🛠️ **Serviços GarageProTech**  
+    services: `🛠️ **Serviços GarageProTech**  
 
 Realizamos todos esses serviços com garantia:  
 • 🔧 Mecânica Geral  
@@ -1534,115 +1276,414 @@ Realizamos todos esses serviços com garantia:
 • 🛢️ Troca de Óleo e Filtros  
 • 🔍 Diagnóstico Computadorizado  
 
-Para orçamento, me informe: **modelo, ano e o problema!** 📋`
+Para orçamento, me informe: **modelo, ano e o problema!** 📋`,
+
+    quickOptions: `🚗 **Problemas comuns:**
+
+[1] 🔧 Mecânica (motor, embreagem, troca de óleo)
+[2] ⚡ Elétrica (bateria, partida, luzes, vidros)
+[3] 🛑 Freios (barulho, pedal baixo, pastilhas)
+[4] 🛢️ Manutenção (óleo, filtros, revisão)
+[5] 🔍 Diagnóstico (computadorizado, verificação)
+[6] 🚙 Suspensão (barulhos, trepidação)
+[7] 💻 Injeção (falhas, consumo alto)
+[8] ❓ Outro problema
+
+**Digite o número ou descreva seu problema:**`,
+
+    getQuickOptionText(number) {
+        const options = {
+            "1": "Problemas no motor, embreagem ou troca de óleo",
+            "2": "Problemas elétricos, bateria, partida ou luzes",
+            "3": "Problemas nos freios, barulho ou pastilhas",
+            "4": "Manutenção, troca de óleo ou revisão",
+            "5": "Diagnóstico computadorizado ou verificação geral",
+            "6": "Problemas na suspensão, barulhos ou trepidação",
+            "7": "Problemas na injeção eletrônica ou consumo alto",
+            "8": "Outro problema diferente dos listados"
+        };
+        return options[number] || "Outro problema";
+    }
 };
 
-// ===== FUNÇÃO PRINCIPAL DO BOT =====
-function botReply(userText) {
-    const original = userText;
-    const text = normalize(userText);
-    let reply = "Desculpe, não entendi muito bem. Pode reformular? 😊";
+// ===================== INTENÇÕES DO USUÁRIO =====================
+class IntentDetector {
+    static patterns = {
+        greeting: ["oi", "ola", "opa", "eae", "hey", "olá", "bom dia", "boa tarde", "boa noite"],
+        thanks: ["obrigado", "valeu", "agradeco", "brigado", "obrigada", "thanks"],
+        goodbye: ["tchau", "ate mais", "fui", "vlw", "bye", "encerrar", "flw", "adeus", "sair"],
+        whatsapp: ["whatsapp", "zap", "whats", "wpp"],
+        phone: ["telefone", "ligar", "ligacao", "discar", "fone"],
+        hours: ["horario", "expediente", "abre", "fecha", "funciona", "atendimento"],
+        address: ["endereco", "localizacao", "onde fica", "local", "mapa", "endereço"],
+        budget: ["orcamento", "preco", "valor", "quanto", "custa", "cotacao", "cotaçao", "preço"],
+        service: ["servico", "revisao", "manutencao", "reparo", "freio", "suspensao",
+                 "injecao", "troca", "conserto", "pastilha", "oleo", "óleo", "serviço", "revisão"],
+        problem: ["problema", "defeito", "quebrado", "barulho", "ruido", "vazamento", "quebrou"],
+        about: ["quem sao", "sobre", "empresa", "historia", "conhecer"]
+    };
 
-    // Resetar contexto em despedidas
-    if (has(text, intents.despedida)) {
-        conversationContext = { waiting: false, intent: null, data: {}, step: 0 };
+    static detect(text) {
+        for (const [intent, patterns] of Object.entries(this.patterns)) {
+            if (TextUtils.containsAny(text, patterns)) {
+                return intent;
+            }
+        }
+        return null;
+    }
+}
+
+// ===================== GERENCIADOR DE ORÇAMENTO =====================
+class BudgetManager {
+    static startCollection() {
+        chatState.isCollectingData = true;
+        chatState.currentStep = 1;
+        chatState.formData = {
+            model: "",
+            year: "",
+            problem: "",
+            problemType: "",
+            details: ""
+        };
     }
 
-    // 1 — SE ESTÁ COLETANDO DADOS
-    if (conversationContext.waiting) {
-        // Verificar se é uma opção numérica rápida
-        if (/^[1-8]$/.test(text.trim())) {
-            const opcoes = {
-                "1": "Problemas no motor, embreagem ou troca de óleo",
-                "2": "Problemas elétricos, bateria, partida ou luzes",
-                "3": "Problemas nos freios, barulho ou pastilhas",
-                "4": "Manutenção, troca de óleo ou revisão",
-                "5": "Diagnóstico computadorizado ou verificação geral",
-                "6": "Problemas na suspensão, barulhos ou trepidação",
-                "7": "Problemas na injeção eletrônica ou consumo alto",
-                "8": "Outro problema diferente dos listados"
-            };
-            
-            conversationContext.data.problema = opcoes[text];
-            conversationContext.step = 2;
-            
-            // Continuar com as outras informações
-            const { modelo: M, ano: A } = conversationContext.data;
-            const faltando = [];
-            if (!M) faltando.push("• **Modelo do carro**");
-            if (!A) faltando.push("• **Ano do veículo**");
-            
-            reply = `✅ **Problema registrado:** ${opcoes[text]}  
+    static reset() {
+        chatState.isCollectingData = false;
+        chatState.currentStep = 0;
+        chatState.formData = {
+            model: "",
+            year: "",
+            problem: "",
+            problemType: "",
+            details: ""
+        };
+    }
 
-📋 **Agora preciso de:**  
-${faltando.join('\n')}  
+    static extractData(text, originalText) {
+        let collectedSomething = false;
+        
+        // Detectar modelo
+        const model = CarModels.detect(text);
+        if (model && !chatState.formData.model) {
+            chatState.formData.model = model.toUpperCase();
+            collectedSomething = true;
+        }
 
-Pode me informar? 🚗`;
+        // Detectar ano
+        const year = TextUtils.extractYear(text);
+        if (year && !chatState.formData.year) {
+            chatState.formData.year = year;
+            collectedSomething = true;
+        }
+
+        // Detectar tipo de problema
+        const problemType = ServiceClassifier.detectProblemType(text);
+        if (problemType && !chatState.formData.problemType) {
+            chatState.formData.problemType = problemType;
+            collectedSomething = true;
+        }
+
+        // Detectar descrição do problema
+        const isProblemDescription = originalText.length > 3 && 
+                                    !year && 
+                                    !model && 
+                                    !/\b(sim|não|nao|ok|pronto)\b/i.test(originalText);
+        
+        if (!chatState.formData.problem && isProblemDescription) {
+            chatState.formData.problem = originalText;
+            collectedSomething = true;
+        }
+
+        return collectedSomething;
+    }
+
+    static isComplete() {
+        const { model, year, problem } = chatState.formData;
+        return model && year && problem && chatState.currentStep >= 2;
+    }
+
+    static getMissingFields() {
+        const { model, year, problem } = chatState.formData;
+        const missing = [];
+        
+        if (!model) missing.push("• **Modelo do carro** (ex: Gol, Civic, Onix)");
+        if (!year) missing.push("• **Ano do veículo**");
+        if (!problem) missing.push("• **Descrição do problema/serviço**");
+        
+        return missing;
+    }
+
+    static getStatusMessage() {
+        const { model, year, problem } = chatState.formData;
+        
+        return `🛠️ **Ótimo! Vamos continuar seu orçamento**  
+
+📋 **Informações coletadas:**  
+${model ? `• **Modelo:** ${model}\n` : ""}${year ? `• **Ano:** ${year}\n` : ""}${problem ? `• **Serviço:** ${problem}\n` : ""}  
+
+📝 **Ainda preciso de:**  
+${this.getMissingFields().join('\n')}  
+
+Pode me enviar? 😊`;
+    }
+
+    static getCompletionMessage() {
+        const { model, year, problem, problemType, details } = chatState.formData;
+        const budgetData = { model, year, problem, problemType, details: details || "Não informado" };
+        
+        const message = `🛠️ **Perfeito! Orçamento Solicitado**  
+
+📋 **Dados recebidos:**  
+• **Veículo:** ${model}  
+• **Ano:** ${year}  
+• **Serviço:** ${problem}  
+${details ? `• **Detalhes:** ${details}\n` : ''}  
+
+✅ **Pronto! Clique no botão abaixo para enviar para nosso WhatsApp:**  
+
+[📱 Enviar para WhatsApp](javascript:WhatsAppSender.send(${JSON.stringify(budgetData).replace(/"/g, '&quot;')}))  
+
+Nossa equipe responderá com o orçamento em breve!`;
+        
+        this.reset();
+        return message;
+    }
+}
+
+// ===================== ENVIO PARA WHATSAPP =====================
+class WhatsAppSender {
+    static send(budgetData) {
+        let parsedData;
+        if (typeof budgetData === 'string') {
+            parsedData = JSON.parse(budgetData);
         } else {
-            // Processar normalmente
-            reply = processarColeta(text, original);
+            parsedData = budgetData;
         }
         
-        addMessage(reply, "bot");
-        return;
+        const serviceType = ServiceClassifier.categorize(parsedData.problem || '');
+        
+        const message = 
+`🛠️ *NOVO ORÇAMENTO SOLICITADO VIA SITE* 🚗
+
+*DADOS DO VEÍCULO:*
+• Modelo: ${parsedData.model || 'Não informado'}
+• Ano: ${parsedData.year || 'Não informado'}
+• Problema: ${parsedData.problem || 'Não informado'}
+• Detalhes adicionais: ${parsedData.details || 'Não informado'}
+
+*TIPO DE SERVIÇO NECESSÁRIO:*
+${serviceType}
+
+*INFORMAÇÕES ADICIONAIS:*
+• Cliente: Via Chatbot do Site
+• Data: ${new Date().toLocaleDateString('pt-BR')}
+• Hora: ${new Date().toLocaleTimeString('pt-BR')}
+
+_Orçamento solicitado automaticamente pelo sistema_`;
+
+        const url = `https://wa.me/${CONFIG.whatsappNumber}?text=${encodeURIComponent(message)}`;
+        window.open(url, "_blank");
+        
+        // Fechar o chatbot após enviar
+        setTimeout(() => {
+            elements.chatbotBox.style.display = "none";
+        }, 1000);
+    }
+}
+
+// ===================== GERENCIADOR DE INTERFACE =====================
+class ChatUI {
+    static addMessage(text, sender) {
+        const messageDiv = document.createElement("div");
+        messageDiv.classList.add("message", `${sender}-message`);
+        
+        messageDiv.innerHTML = TextUtils.processMessageContent(text);
+        elements.chatMessages.appendChild(messageDiv);
+        elements.chatMessages.scrollTop = elements.chatMessages.scrollHeight;
+        
+        return messageDiv;
     }
 
-    // 2 — INTENÇÕES DIRETAS
-    if (has(text, intents.agradecimento)) {
-        reply = "De nada! 😊 Fico feliz em ajudar! Se tiver mais alguma dúvida, é só perguntar! 🚗";
-    }
-    else if (has(text, intents.despedida)) {
-        reply = "Até logo! 👋 Lembre-se: qualidade e garantia é aqui na GarageProTech! Volte sempre! 🛠️";
-    }
-    else if (has(text, intents.whatsapp) || has(text, intents.telefone)) {
-        reply = respostas.contato;
-    }
-    else if (has(text, intents.horario)) {
-        reply = respostas.horario;
-    }
-    else if (has(text, intents.endereco)) {
-        reply = respostas.endereco;
-    }
-    else if (has(text, intents.sobre)) {
-        reply = respostas.sobre;
+    static showTypingIndicator() {
+        const indicator = this.addMessage("Digitando...", "bot");
+        return indicator;
     }
 
-    // 3 — ORÇAMENTO E SERVIÇOS
-    else if (has(text, intents.orcamento) || has(text, intents.servico) || has(text, intents.problema)) {
-        conversationContext.waiting = true;
-        conversationContext.intent = "orcamento";
-        conversationContext.data = {};
-        conversationContext.step = 1;
-
-        // Verificar se já tem informações na mensagem inicial
-        const modelo = detectarModelo(text);
-        const ano = detectarAno(text);
-        const temServico = has(text, intents.servico) || has(text, intents.problema);
-
-        if (modelo || ano || temServico) {
-            // Já tem alguma informação, processar imediatamente
-            reply = processarColeta(text, original);
-        } else {
-            // Mostrar opções rápidas
-            reply = `🛠️ **Claro! Vamos fazer seu orçamento!**  
-
-${mostrarOpcoesRapidas()}`;
+    static removeMessage(messageElement) {
+        if (messageElement && messageElement.parentNode) {
+            elements.chatMessages.removeChild(messageElement);
         }
     }
 
-    // 4 — SERVIÇOS GERAIS (sem solicitar orçamento)
-    else if (has(text, ["servicos", "serviços", "fazem", "realizam", "o que fazem"])) {
-        reply = respostas.servicos;
-    }
+    static setupEventListeners() {
+        // Abrir/fechar chatbot
+        elements.chatbotButton.addEventListener("click", () => {
+            elements.chatbotBox.style.display = "flex";
+            elements.inputField.focus();
+        });
 
-    // 5 — SAUDAÇÃO
-    else if (/^(oi|ola|opa|eae|hey|olá|bom dia|boa tarde|boa noite)/.test(text)) {
-        reply = respostas.saudacao;
-        conversationContext = { waiting: false, intent: null, data: {}, step: 0 };
-    }
+        elements.chatbotClose.addEventListener("click", () => {
+            elements.chatbotBox.style.display = "none";
+        });
 
-    addMessage(reply, "bot");
+        // Fechar com ESC
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && elements.chatbotBox.style.display === "flex") {
+                elements.chatbotBox.style.display = "none";
+            }
+        });
+
+        // Enviar mensagem
+        elements.sendBtn.addEventListener("click", () => ChatHandler.sendUserMessage());
+        elements.inputField.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") ChatHandler.sendUserMessage();
+        });
+    }
 }
+
+// ===================== GERENCIADOR DE CONVERSA =====================
+class ChatHandler {
+    static async sendUserMessage() {
+        const text = elements.inputField.value.trim();
+        if (text === "") return;
+
+        ChatUI.addMessage(text, "user");
+        elements.inputField.value = "";
+
+        // Simular digitação do bot
+        setTimeout(() => {
+            const typingIndicator = ChatUI.showTypingIndicator();
+            setTimeout(() => {
+                ChatUI.removeMessage(typingIndicator);
+                this.processBotReply(text);
+            }, CONFIG.processingDelay);
+        }, CONFIG.typingDelay);
+    }
+
+    static processBotReply(userText) {
+        const normalizedText = TextUtils.normalize(userText);
+        let reply = this.handleUserMessage(userText, normalizedText);
+        ChatUI.addMessage(reply, "bot");
+    }
+
+    static handleUserMessage(originalText, normalizedText) {
+        // Tratar despedidas
+        if (IntentDetector.detect(normalizedText) === "goodbye") {
+            BudgetManager.reset();
+        }
+
+        // Se está coletando dados para orçamento
+        if (chatState.isCollectingData) {
+            return this.handleBudgetCollection(originalText, normalizedText);
+        }
+
+        // Detectar intenção
+        const intent = IntentDetector.detect(normalizedText);
+        
+        // Tratar intenções específicas
+        switch (intent) {
+            case "greeting":
+                return Responses.greeting;
+                
+            case "thanks":
+                return "De nada! 😊 Fico feliz em ajudar! Se tiver mais alguma dúvida, é só perguntar! 🚗";
+                
+            case "goodbye":
+                return "Até logo! 👋 Lembre-se: qualidade e garantia é aqui na GarageProTech! Volte sempre! 🛠️";
+                
+            case "whatsapp":
+            case "phone":
+                return Responses.contact;
+                
+            case "hours":
+                return Responses.hours;
+                
+            case "address":
+                return Responses.address;
+                
+            case "about":
+                return Responses.about;
+                
+            case "service":
+            case "problem":
+                return this.handleServiceIntent(originalText, normalizedText);
+                
+            default:
+                return this.handleGeneralQuery(normalizedText);
+        }
+    }
+
+    static handleBudgetCollection(originalText, normalizedText) {
+        // Verificar opção numérica rápida
+        if (/^[1-8]$/.test(normalizedText.trim())) {
+            chatState.formData.problem = Responses.getQuickOptionText(normalizedText);
+            chatState.currentStep = 2;
+            
+            const missingFields = BudgetManager.getMissingFields();
+            if (missingFields.length > 0) {
+                return `✅ **Problema registrado:** ${chatState.formData.problem}  
+
+📋 **Agora preciso de:**  
+${missingFields.join('\n')}  
+
+Pode me informar? 🚗`;
+            }
+        } else {
+            // Extrair dados do texto
+            BudgetManager.extractData(normalizedText, originalText);
+        }
+
+        // Verificar se temos todos os dados necessários
+        if (BudgetManager.isComplete()) {
+            const { problem } = chatState.formData;
+            const followUpQuestion = ServiceClassifier.getFollowUpQuestion(
+                ServiceClassifier.detectProblemType(TextUtils.normalize(problem))
+            );
+
+            if (followUpQuestion && !chatState.formData.details) {
+                chatState.currentStep = 3;
+                return `${followUpQuestion}\n\n*(Responda com os detalhes ou digite "pronto" se não souber)*`;
+            }
+
+            if (chatState.formData.details || normalizedText.includes("pronto")) {
+                return BudgetManager.getCompletionMessage();
+            }
+        }
+
+        // Mostrar status atual
+        return BudgetManager.getStatusMessage();
+    }
+
+    static handleServiceIntent(originalText, normalizedText) {
+        // Verificar se já tem informações na mensagem
+        const hasModel = CarModels.detect(normalizedText);
+        const hasYear = TextUtils.extractYear(normalizedText);
+        
+        BudgetManager.startCollection();
+        
+        if (hasModel || hasYear) {
+            BudgetManager.extractData(normalizedText, originalText);
+            return BudgetManager.getStatusMessage();
+        }
+        
+        return `🛠️ **Claro! Vamos fazer seu orçamento!**  
+
+${Responses.quickOptions}`;
+    }
+
+    static handleGeneralQuery(normalizedText) {
+        if (TextUtils.containsAny(normalizedText, ["servicos", "serviços", "fazem", "realizam", "o que fazem"])) {
+            return Responses.services;
+        }
+        
+        return "Desculpe, não entendi muito bem. Pode reformular? 😊";
+    }
+}
+
+// ===================== INICIALIZAÇÃO =====================
+document.addEventListener('DOMContentLoaded', () => {
+    ChatUI.setupEventListeners();
+});
 
 // ===== ADICIONAR ESTILOS PARA OPÇÕES RÁPIDAS =====
 const style = document.createElement('style');
